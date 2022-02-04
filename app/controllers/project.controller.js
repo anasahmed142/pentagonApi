@@ -73,8 +73,8 @@ exports.setProject = async (req, res) => {
         file1: file1,
         file2: file2,
         file3: file3,
-        file4: file4,
-        otherFiles: otherFiles,
+        file4: JSON.stringify(file4),
+        otherFiles: JSON.stringify(otherFiles),
       })
       .then(function (project) {
         if (project) {
@@ -115,6 +115,261 @@ exports.setProject = async (req, res) => {
         res.send(senda);
       });
   } catch (err) {
+    var dataa = { error: e };
+    var senda = {
+      version: "v1",
+      rCode: ec,
+      results: dataa,
+    };
+    e = "";
+    ec = 104;
+    res.send(senda);
+  }
+};
+
+exports.getProjects = async (req, res) => {
+  try {
+    const data = req.body.data;
+    var d = decodeApi(data);
+    var parseData = JSON.parse(d);
+
+    const dat = parseData.dat;
+    var token = parseData.token;
+
+    if (getDateUNIX() !== dat) {
+      e = e + "Token Expired";
+      ec = 104;
+      throw new Error("error");
+    }
+    const project = await projects.findAll().catch((err) => {
+      console.log(err);
+      var senda = {
+        version: "v1",
+        rCode: 104,
+        results: { error: err.errors[0].message },
+      };
+      e = "";
+      ec = 104;
+      res.send(senda);
+    });
+    var dats = JSON.parse(JSON.stringify(project, null, 2));
+    var datas = { projects: dats };
+    var send = {
+      version: "v1",
+      rCode: 100,
+      results: datas,
+    };
+    res.send(send);
+  } catch (err) {
+    console.log("2:", err);
+    var dataa = { error: e };
+    var senda = {
+      version: "v1",
+      rCode: ec,
+      results: dataa,
+    };
+    e = "";
+    ec = 104;
+    res.send(senda);
+  }
+};
+
+exports.getProject = async (req, res) => {
+  try {
+    const data = req.body.data;
+    var d = decodeApi(data);
+    var parseData = JSON.parse(d);
+
+    const projectid = parseData.projectid;
+    const dat = parseData.dat;
+    var token = parseData.token;
+
+    if (getDateUNIX() !== dat) {
+      e = e + "Token Expired";
+      ec = 104;
+      throw new Error("error");
+    }
+    const project = await projects
+      .findOne({
+        where: {
+          projectid: projectid,
+        },
+        include: [
+          {
+            model: inventorys,
+          },
+        ],
+      })
+      .catch((err) => {
+        console.log(err);
+        var senda = {
+          version: "v1",
+          rCode: 104,
+          results: { error: err.errors[0].message },
+        };
+        e = "";
+        ec = 104;
+        res.send(senda);
+      });
+    var datas = { project };
+    var send = {
+      version: "v1",
+      rCode: 100,
+      results: datas,
+    };
+    res.send(send);
+  } catch (err) {
+    console.log("2:", err);
+    var dataa = { error: e };
+    var senda = {
+      version: "v1",
+      rCode: ec,
+      results: dataa,
+    };
+    e = "";
+    ec = 104;
+    res.send(senda);
+  }
+};
+
+exports.deleteProject = async (req, res) => {
+  try {
+    const data = req.body.data;
+    var d = decodeApi(data);
+    var parseData = JSON.parse(d);
+
+    const projectid = parseData.projectid;
+    var token = parseData.token;
+    var dat = parseData.dat;
+
+    if (getDateUNIX() !== dat) {
+      e = e + "Token Expired";
+      ec = 104;
+      throw new Error("error");
+    }
+
+    const project = await projects
+      .findOne({
+        where: {
+          projectid: projectid,
+        },
+        include: [
+          {
+            model: inventorys,
+          },
+        ],
+      })
+      .catch((err) => {
+        console.log(err);
+        var senda = {
+          version: "v1",
+          rCode: 104,
+          results: { error: err.errors[0].message },
+        };
+        e = "";
+        ec = 104;
+        res.send(senda);
+      });
+
+    for (
+      let index = 0;
+      index < project.dataValues.inventories.length;
+      index++
+    ) {
+      const element = project.dataValues.inventories[index];
+      await inventorys.destroy({
+        where: {
+          inventoryid: element.dataValues.inventoryid,
+        },
+      });
+    }
+
+    await projects
+      .destroy({
+        where: {
+          projectid: projectid,
+        },
+      })
+      .catch((err) => {
+        var senda = {
+          version: "v1",
+          rCode: 104,
+          results: { error: err.errors[0].message },
+        };
+        e = "";
+        ec = 104;
+        res.send(senda);
+      });
+
+    var datas = { message: "successfully deleted the project" };
+    var send = {
+      version: "v1",
+      rCode: 100,
+      results: datas,
+    };
+    res.send(send);
+  } catch (err) {
+    console.log(err);
+    var dataa = { error: e };
+    var senda = {
+      version: "v1",
+      rCode: ec,
+      results: dataa,
+    };
+    e = "";
+    ec = 104;
+    res.send(senda);
+  }
+};
+
+exports.editProject = async (req, res) => {
+  try {
+    const data = req.body.data;
+    var d = decodeApi(data);
+    var parseData = JSON.parse(d);
+
+    const projectid = parseData.projectid;
+    const dat = parseData.dat;
+    var token = parseData.token;
+
+    if (getDateUNIX() !== dat) {
+      e = e + "Token Expired";
+      ec = 104;
+      throw new Error("error");
+    }
+    const project = await projects
+      .findOne({
+        where: {
+          projectid: projectid,
+        },
+        include: [
+          {
+            model: inventorys,
+          },
+        ],
+      })
+      .catch((err) => {
+        console.log(err);
+        var senda = {
+          version: "v1",
+          rCode: 104,
+          results: { error: err.errors[0].message },
+        };
+        e = "";
+        ec = 104;
+        res.send(senda);
+      });
+    // var dats = JSON.parse(JSON.stringify(project, null, 2));
+    console.log(project);
+    var datas = { project };
+    var send = {
+      version: "v1",
+      rCode: 100,
+      results: datas,
+    };
+    res.send(send);
+  } catch (err) {
+    console.log("2:", err);
     var dataa = { error: e };
     var senda = {
       version: "v1",

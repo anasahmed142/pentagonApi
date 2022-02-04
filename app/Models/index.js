@@ -12,6 +12,8 @@ Leads.belongsTo(User, { foreignKey: "assignAgent" }, Project, {
   foreignKey: "project",
 });
 Project.belongsTo(Leads, { foreignKey: "projectid" });
+
+Project.hasMany(Inventory,{ foreignKey: "project"});
 // Leads.hasOne(Project,{foreignKey: 'project'});
 
 db.users = User;
