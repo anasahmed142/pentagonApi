@@ -24,6 +24,7 @@ app.use(bodyParser.json());
 require("./app/routes/user.routes")(app);
 require("./app/routes/leads.routes")(app);
 require("./app/routes/projects.routes")(app);
+require("./app/routes/land.routes")(app);
 
 
 app.use((req, res, next) => {

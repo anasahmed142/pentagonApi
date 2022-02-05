@@ -21,7 +21,7 @@ exports.setProject = async (req, res) => {
       const element = files[index];
       const name =
         "https://conceptdigitizing.com/api/uploads/" + element.filename;
-      const fieldname = element.fieldname;
+      var fieldname = element.fieldname;
       if (
         fieldname !== "file0" &&
         fieldname !== "file1" &&
@@ -104,7 +104,6 @@ exports.setProject = async (req, res) => {
         }
       })
       .catch((err) => {
-        console.log(err);
         var senda = {
           version: "v1",
           rCode: 104,
@@ -329,6 +328,19 @@ exports.editProject = async (req, res) => {
     var parseData = JSON.parse(d);
 
     const projectid = parseData.projectid;
+    const Type = parseData.Type;
+    const address = parseData.address;
+    const description = parseData.description;
+    const field = parseData.field;
+    const file1 = parseData.file1;
+    const file2 = parseData.file2;
+    const file3 = parseData.file3;
+    const file4 = parseData.file4;
+    const installMonths = parseData.installMonths;
+    const marker = parseData.marker;
+    const name = parseData.name;
+    const otherFiles = parseData.otherFiles;
+    const updatedBy = parseData.updatedBy;
     const dat = parseData.dat;
     var token = parseData.token;
 
@@ -337,19 +349,30 @@ exports.editProject = async (req, res) => {
       ec = 104;
       throw new Error("error");
     }
-    const project = await projects
-      .findOne({
-        where: {
-          projectid: projectid,
+    await projects
+      .update(
+        {
+          Type,
+          address,
+          description,
+          field,
+          file1,
+          file2,
+          file3,
+          file4,
+          installMonths,
+          marker,
+          name,
+          otherFiles,
+          updatedBy,
         },
-        include: [
-          {
-            model: inventorys,
+        {
+          where: {
+            projectid: projectid,
           },
-        ],
-      })
+        }
+      )
       .catch((err) => {
-        console.log(err);
         var senda = {
           version: "v1",
           rCode: 104,
@@ -359,9 +382,137 @@ exports.editProject = async (req, res) => {
         ec = 104;
         res.send(senda);
       });
-    // var dats = JSON.parse(JSON.stringify(project, null, 2));
-    console.log(project);
-    var datas = { project };
+
+    var datas = { message: "successfully edited Project" };
+    var send = {
+      version: "v1",
+      rCode: 100,
+      results: datas,
+    };
+    res.send(send);
+  } catch (err) {
+    console.log("2:", err);
+    var dataa = { error: e };
+    var senda = {
+      version: "v1",
+      rCode: ec,
+      results: dataa,
+    };
+    e = "";
+    ec = 104;
+    res.send(senda);
+  }
+};
+
+exports.deleteInventory = async (req, res) => {
+  try {
+    const data = req.body.data;
+    var d = decodeApi(data);
+    var parseData = JSON.parse(d);
+
+    const inventoryid = parseData.inventoryid;
+    var token = parseData.token;
+    var dat = parseData.dat;
+
+    if (getDateUNIX() !== dat) {
+      e = e + "Token Expired";
+      ec = 104;
+      throw new Error("error");
+    }
+
+    await inventorys
+      .destroy({
+        where: {
+          inventoryid: inventoryid,
+        },
+      })
+      .catch((err) => {
+        var senda = {
+          version: "v1",
+          rCode: 104,
+          results: { error: err.errors[0].message },
+        };
+        e = "";
+        ec = 104;
+        res.send(senda);
+      });
+
+    var datas = { message: "successfully deleted the inventory" };
+    var send = {
+      version: "v1",
+      rCode: 100,
+      results: datas,
+    };
+    res.send(send);
+  } catch (err) {
+    console.log(err);
+    var dataa = { error: e };
+    var senda = {
+      version: "v1",
+      rCode: ec,
+      results: dataa,
+    };
+    e = "";
+    ec = 104;
+    res.send(senda);
+  }
+};
+
+exports.editInventory = async (req, res) => {
+  try {
+    const data = req.body.data;
+    var d = decodeApi(data);
+    var parseData = JSON.parse(d);
+
+    const inventoryid = parseData.inventoryid;
+    const features = parseData.features;
+    const name = parseData.name;
+    const paymentType = parseData.paymentType;
+    const roadSize = parseData.roadSize;
+    const size = parseData.size;
+    const ttype = parseData.ttype;
+    const type = parseData.type;
+    const updatedBy = parseData.updatedBy;
+    const payment = parseData.payment;
+    const dat = parseData.dat;
+    var token = parseData.token;
+
+    if (getDateUNIX() !== dat) {
+      e = e + "Token Expired";
+      ec = 104;
+      throw new Error("error");
+    }
+    await inventorys
+      .update(
+        {
+          features,
+          name,
+          payment,
+          paymentType,
+          roadSize,
+          size,
+          ttype,
+          type,
+          updatedBy,
+        },
+        {
+          where: {
+            inventoryid: inventoryid,
+          },
+        }
+      )
+      .catch((err) => {
+        var senda = {
+          version: "v1",
+          rCode: 104,
+          results: { error: err.errors[0].message },
+        };
+        e = "";
+        ec = 104;
+        res.send(senda);
+      });
+
+    var datas = { message: "successfully edited Inventory" };
     var send = {
       version: "v1",
       rCode: 100,
@@ -397,7 +548,10 @@ function insertInventory(parseData, res, projectid) {
       createdBy: parseData.createdBy,
       project: projectid,
     })
-    .then(function (inventory) {})
+
+    .then(function (inventory) {
+      console.log(inventory);
+    })
     .catch((err) => {
       console.log(err);
       var senda = {

@@ -255,7 +255,7 @@ exports.insertSalesAgent = async (req, res) => {
         var senda = {
           version: "v1",
           rCode: ec,
-          results: { error: err?.errors[0]?.message },
+          results: { error: err.errors[0].message },
         };
         ec = 104;
         e = "";
@@ -295,7 +295,7 @@ exports.viewSalesAgent = async (req, res) => {
         var senda = {
           version: "v1",
           rCode: 104,
-          results: { error: err?.errors[0]?.message },
+          results: { error: err.errors[0].message },
         };
         e = "";
         ec = 104;
@@ -368,7 +368,7 @@ exports.editUser = async (req, res) => {
         var senda = {
           version: "v1",
           rCode: ec,
-          results: { error: err?.errors[0]?.message },
+          results: { error: err.errors[0].message },
         };
         ec = 104;
         e = "";
@@ -420,7 +420,7 @@ exports.deleteUser = async (req, res) => {
         var senda = {
           version: "v1",
           rCode: ec,
-          results: { error: err?.errors[0]?.message },
+          results: { error: err.errors[0].message },
         };
         ec = 104;
         e = "";
@@ -690,7 +690,7 @@ exports.deleteUser = async (req, res) => {
 //       throw new Error("error");
 //     }
 //     var condition = type
-//       ? { type: { $regex: new RegExp(type), $options: "i" } }
+//        { type: { $regex: new RegExp(type), $options: "i" } }
 //       : {};
 //     const event1 = new Date();
 //     var resa;
@@ -1429,6 +1429,6 @@ exports.deleteUser = async (req, res) => {
 //   if(!isBuffer && typeof s === 'object') {
 //       s = JSON.stringify(sortObject(s));
 //   }
-//   sum.update(s, isBuffer ? 'binary' : 'utf8');
+//   sum.update(s, isBuffer  'binary' : 'utf8');
 //   return sum.digest(format || 'hex');
 // };

@@ -6,7 +6,16 @@ module.exports = (app) => {
       cb(null, "uploads");
     },
     filename: function (req, file, cb) {
-      cb(null, file.fieldname + "-" + Date.now() + "" + file.originalname);
+      var fieldname = file.fieldname;
+      if (
+        fieldname !== "file0" &&
+        fieldname !== "file1" &&
+        fieldname !== "file2"
+      ) {
+        var sp = fieldname.split("%");
+        fieldname = "" + sp[0];
+      }
+      cb(null, fieldname + "-" + Date.now() + "" + file.originalname);
     },
   });
 
@@ -22,6 +31,10 @@ module.exports = (app) => {
   router.post("/deleteProject", upload.fields([]), project.deleteProject);
 
   router.post("/editProject", upload.fields([]), project.editProject);
+
+  router.post("/deleteInventory", upload.fields([]), project.deleteInventory);
+
+  router.post("/editInventory", upload.fields([]), project.editInventory);
 
   app.use("/pentagon/v1/project", router);
 };

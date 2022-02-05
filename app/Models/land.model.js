@@ -1,54 +1,70 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./database");
 
-var inventory = sequelize.define(
-  "inventory",
+var land = sequelize.define(
+  "land",
   {
-    inventoryid: {
+    landid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
     },
+    phoneNoOfRefrence: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
     name: {
       type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    features: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    paymentType: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    payment: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
-    },
-    roadSize: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
-    },
-    size: {
-      type: DataTypes.DOUBLE,
       allowNull: false,
     },
     status: {
       type: DataTypes.TEXT,
       allowNull: false,
-      defaultValue: "Not Sold"
+      defaultValue: "pending",
     },
-    ttype: {
+    marker: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    type: {
+    address: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    project: {
-      type: DataTypes.INTEGER,
+    sizeinAcre: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    refrenceName: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    extraInfo: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    agreedCostPerAcre: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
+    totalTokenMoney: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
+    totalCost: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
+    profitCost: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
+    scheduleOfPayment: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    paidPayments: {
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     updatedBy: {
@@ -65,4 +81,4 @@ var inventory = sequelize.define(
     timestamps: true,
   }
 );
-module.exports = inventory;
+module.exports = land;

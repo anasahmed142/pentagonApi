@@ -2,6 +2,7 @@ var User = require("./user.model.js");
 var Leads = require("./leads.model.js");
 var Project = require("./project.model.js");
 var Inventory = require("./inventory.model.js");
+var lands = require("./land.model.js");
 
 const sequelize = require("./database");
 const db = {};
@@ -20,5 +21,6 @@ db.users = User;
 db.leads = Leads;
 db.project = Project;
 db.inventory = Inventory;
+db.land = lands;
 
 module.exports = db;
