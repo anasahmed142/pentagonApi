@@ -32,6 +32,8 @@ module.exports = (app) => {
 
   router.post("/deleteLeads", upload.fields([]), leads.deleteLeads);
 
+  router.post("/assignClient", upload.fields([]), leads.assignClient);
+
   // // Retrieve all user or by type with token
   // router.get("/", user.findAll);
 

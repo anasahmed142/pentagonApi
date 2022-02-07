@@ -1,13 +1,10 @@
 const db = require("../Models");
 const leads = db.leads;
 const user = db.users;
+const history = db.history;
 // const token = db.token;
 const fs = require("fs");
-const {
-  genrateApi,
-  decodeApi,
-  getDateUNIX,
-} = require("../util/validators");
+const { genrateApi, decodeApi, getDateUNIX } = require("../util/validators");
 
 var e = "";
 var ec = 104;
@@ -201,14 +198,14 @@ exports.getLeads = async (req, res) => {
     const lead = await leads
       .findAll({
         include: [
-            {
-                model: user, 
-                attributes: ['name']
-            }
-        ]
-    })
+          {
+            model: user,
+            attributes: ["name"],
+          },
+        ],
+      })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         var senda = {
           version: "v1",
           rCode: 104,
@@ -388,6 +385,110 @@ exports.deleteLeads = async (req, res) => {
       results: datas,
     };
     res.send(send);
+  } catch (err) {
+    console.log(err);
+    var dataa = { error: e };
+    var senda = {
+      version: "v1",
+      rCode: ec,
+      results: dataa,
+    };
+    e = "";
+    ec = 104;
+    res.send(senda);
+  }
+};
+
+exports.assignClient = async (req, res) => {
+  try {
+    const data = req.body.data;
+    var d = decodeApi(data);
+    var parseData = JSON.parse(d);
+
+    // history
+    var token = parseData.token;
+    var dat = parseData.dat;
+
+    if (getDateUNIX() !== dat) {
+      e = e + "Token Expired";
+      ec = 104;
+      throw new Error("error");
+    }
+
+    leads
+      .create({
+        phoneNo: parseData.phoneNo,
+        FollowUpDate: parseData.FollowUpDate,
+        project: parseData.project,
+        IntrestedIn: parseData.IntrestedIn,
+        comments: parseData.comments,
+        name: parseData.name,
+        createdBy: parseData.createdBy,
+        updatedBy: parseData.updatedBy,
+        emailId: parseData.emailId,
+        phoneNo: parseData.phoneNo,
+        uploadedBy: parseData.uploadedBy,
+        Intrested: parseData.Intrested,
+        assignAgent: parseData.assignAgent,
+        status: parseData.status,
+        time: parseData.time,
+      })
+      .then(function (lead) {
+        if (lead) {
+          history
+          .create({
+            date: parseData.history.date,
+            FollowUpDate: parseData.history.FollowUpDate,
+            ProjectIntrestId: parseData.history.ProjectIntrestId,
+            IntrestedIn: parseData.history.IntrestedIn,
+            comments: parseData.history.comments,
+            createdBy: parseData.history.createdBy,
+            leadId: lead.dataValues.leadId,
+          })
+          .then(function (history) {
+            if (history) {
+              var send = {
+                version: "v1",
+                rCode: 100,
+                results: { message: "all Done" },
+              };
+              e = "";
+              ec = 104;
+              res.send(send);
+            } else {
+              var send = {
+                version: "v1",
+                rCode: 104,
+                results: { error: "Error in insert new record" },
+              };
+              e = "";
+              ec = 104;
+              res.send(send);
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+            var senda = {
+              version: "v1",
+              rCode: 104,
+              results: { error: err.errors[0].message },
+            };
+            e = "";
+            ec = 104;
+            res.send(senda);
+          });
+        }
+      })
+      .catch((err) => {
+        var senda = {
+          version: "v1",
+          rCode: 104,
+          results: { error: err.errors[0].message },
+        };
+        e = "";
+        ec = 104;
+        res.send(senda);
+      });
   } catch (err) {
     console.log(err);
     var dataa = { error: e };
