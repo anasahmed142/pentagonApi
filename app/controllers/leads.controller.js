@@ -436,47 +436,47 @@ exports.assignClient = async (req, res) => {
       .then(function (lead) {
         if (lead) {
           history
-          .create({
-            date: parseData.history.date,
-            FollowUpDate: parseData.history.FollowUpDate,
-            ProjectIntrestId: parseData.history.ProjectIntrestId,
-            IntrestedIn: parseData.history.IntrestedIn,
-            comments: parseData.history.comments,
-            createdBy: parseData.history.createdBy,
-            leadId: lead.dataValues.leadId,
-          })
-          .then(function (history) {
-            if (history) {
-              var send = {
-                version: "v1",
-                rCode: 100,
-                results: { message: "all Done" },
-              };
-              e = "";
-              ec = 104;
-              res.send(send);
-            } else {
-              var send = {
+            .create({
+              date: parseData.history.date,
+              FollowUpDate: parseData.history.FollowUpDate,
+              ProjectIntrestId: parseData.history.ProjectIntrestId,
+              IntrestedIn: parseData.history.IntrestedIn,
+              comments: parseData.history.comments,
+              createdBy: parseData.history.createdBy,
+              leadId: lead.dataValues.leadId,
+            })
+            .then(function (history) {
+              if (history) {
+                var send = {
+                  version: "v1",
+                  rCode: 100,
+                  results: { message: "all Done" },
+                };
+                e = "";
+                ec = 104;
+                res.send(send);
+              } else {
+                var send = {
+                  version: "v1",
+                  rCode: 104,
+                  results: { error: "Error in insert new record" },
+                };
+                e = "";
+                ec = 104;
+                res.send(send);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              var senda = {
                 version: "v1",
                 rCode: 104,
-                results: { error: "Error in insert new record" },
+                results: { error: err.errors[0].message },
               };
               e = "";
               ec = 104;
-              res.send(send);
-            }
-          })
-          .catch((err) => {
-            console.log(err)
-            var senda = {
-              version: "v1",
-              rCode: 104,
-              results: { error: err.errors[0].message },
-            };
-            e = "";
-            ec = 104;
-            res.send(senda);
-          });
+              res.send(senda);
+            });
         }
       })
       .catch((err) => {
@@ -491,6 +491,72 @@ exports.assignClient = async (req, res) => {
       });
   } catch (err) {
     console.log(err);
+    var dataa = { error: e };
+    var senda = {
+      version: "v1",
+      rCode: ec,
+      results: dataa,
+    };
+    e = "";
+    ec = 104;
+    res.send(senda);
+  }
+};
+
+exports.getClient = async (req, res) => {
+  try {
+    const data = req.body.data;
+    var d = decodeApi(data);
+    var parseData = JSON.parse(d);
+
+    var status = parseData.status;
+    var assignTo = parseData.assignTo;
+    const dat = parseData.dat;
+    var token = parseData.token;
+
+    if (getDateUNIX() !== dat) {
+      e = e + "Token Expired";
+      ec = 104;
+      throw new Error("error");
+    }
+    console.log(status)
+    const lead = await leads
+      .findAll(
+        {
+          include: [
+            {
+              model: user,
+            },
+            {
+              model: history,
+            }
+          ],
+          where: {
+            status: parseData.status,
+          },
+        },
+      )
+      .catch((err) => {
+        console.log(err);
+        var senda = {
+          version: "v1",
+          rCode: 104,
+          results: { error: err.errors[0].message },
+        };
+        e = "";
+        ec = 104;
+        res.send(senda);
+      });
+    var dats = JSON.parse(JSON.stringify(lead, null, 2));
+    var datas = { leads: dats };
+    var send = {
+      version: "v1",
+      rCode: 100,
+      results: datas,
+    };
+    res.send(send);
+  } catch (err) {
+    console.log("2:", err);
     var dataa = { error: e };
     var senda = {
       version: "v1",

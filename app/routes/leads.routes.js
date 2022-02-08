@@ -34,6 +34,9 @@ module.exports = (app) => {
 
   router.post("/assignClient", upload.fields([]), leads.assignClient);
 
+  router.post("/getClient", upload.fields([]), leads.getClient);
+
+
   // // Retrieve all user or by type with token
   // router.get("/", user.findAll);
 

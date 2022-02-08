@@ -1,4 +1,5 @@
 const { DataTypes } = require("sequelize");
+const { land } = require(".");
 const sequelize = require("./database");
 
 var leads = sequelize.define(
@@ -54,6 +55,18 @@ var leads = sequelize.define(
       allowNull: true,
     },
     project: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    inventory: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    land: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    property: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
