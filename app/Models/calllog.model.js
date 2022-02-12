@@ -18,6 +18,26 @@ var calllog = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    name: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    phoneNo: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    duration: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    type: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    date: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
     createdBy: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -26,6 +46,10 @@ var calllog = sequelize.define(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    }
   },
   {
     freezeTableName: true,

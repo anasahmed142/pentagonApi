@@ -54,19 +54,19 @@ var leads = sequelize.define(
       type: DataTypes.DOUBLE,
       allowNull: true,
     },
-    project: {
+    projectid: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    inventory: {
+    inventoryid: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    land: {
+    landid: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    property: {
+    propertyid: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },

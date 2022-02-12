@@ -25,18 +25,20 @@ module.exports = (app) => {
   router.post("/setLeads", upload.single('file'), leads.setLeads);
 
   router.post("/assignLeadToAgent", upload.fields([]), leads.assignLeadToAgent);
-
+  
   router.post("/editLead", upload.fields([]), leads.editLead);
-
+  
   router.post("/deleteLead", upload.fields([]), leads.deleteLead);
-
+  
   router.post("/deleteLeads", upload.fields([]), leads.deleteLeads);
-
+  
   router.post("/assignClient", upload.fields([]), leads.assignClient);
-
+  
   router.post("/getClient", upload.fields([]), leads.getClient);
-
-
+  
+  router.post("/getClients", upload.fields([]), leads.getClients);
+  
+  
   // // Retrieve all user or by type with token
   // router.get("/", user.findAll);
 

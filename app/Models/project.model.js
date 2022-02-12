@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./database");
 
-var project = sequelize.define(
+var Project = sequelize.define(
   "projects",
   {
     projectid: {
@@ -73,4 +73,4 @@ var project = sequelize.define(
     timestamps: true,
   }
 );
-module.exports = project;
+module.exports = Project;

@@ -2,6 +2,11 @@ const db = require("../Models");
 const leads = db.leads;
 const user = db.users;
 const history = db.history;
+const Project = db.Project;
+const calllog = db.calllog;
+const property = db.property;
+const land = db.land;
+const Inventory = db.Inventory;
 // const token = db.token;
 const fs = require("fs");
 const { genrateApi, decodeApi, getDateUNIX } = require("../util/validators");
@@ -247,6 +252,31 @@ exports.editLead = async (req, res) => {
     var emailId = parseData.emailId;
     var name = parseData.name;
     var phoneNo = parseData.phoneNo;
+    var address = null;
+    if (parseData.address) {
+      var address = parseData.address;
+    }
+    var IntrestedIn = null;
+    if (parseData.IntrestedIn) {
+      var IntrestedIn = parseData.IntrestedIn;
+    }
+    var projectid = null;
+    if (parseData.projectid) {
+      var projectid = parseData.projectid;
+    }
+
+    var inventoryid = null;
+    if (parseData.inventoryid) {
+      var inventoryid = parseData.inventoryid;
+    }
+    var landid = null;
+    if (parseData.landid) {
+      var landid = parseData.landid;
+    }
+    var propertyid = null;
+    if (parseData.propertyid) {
+      var propertyid = parseData.propertyid;
+    }
     var token = parseData.token;
     var dat = parseData.dat;
 
@@ -258,7 +288,17 @@ exports.editLead = async (req, res) => {
 
     await leads
       .update(
-        { emailId, name, phoneNo },
+        {
+          emailId,
+          name,
+          phoneNo,
+          address,
+          IntrestedIn,
+          projectid,
+          inventoryid,
+          landid,
+          propertyid,
+        },
         {
           where: {
             leadId: leadId,
@@ -419,7 +459,7 @@ exports.assignClient = async (req, res) => {
       .create({
         phoneNo: parseData.phoneNo,
         FollowUpDate: parseData.FollowUpDate,
-        project: parseData.project,
+        projectid: parseData.project,
         IntrestedIn: parseData.IntrestedIn,
         comments: parseData.comments,
         name: parseData.name,
@@ -432,6 +472,7 @@ exports.assignClient = async (req, res) => {
         assignAgent: parseData.assignAgent,
         status: parseData.status,
         time: parseData.time,
+        address: parseData.address,
       })
       .then(function (lead) {
         if (lead) {
@@ -503,14 +544,85 @@ exports.assignClient = async (req, res) => {
   }
 };
 
-exports.getClient = async (req, res) => {
+exports.getClients = async (req, res) => {
   try {
     const data = req.body.data;
     var d = decodeApi(data);
     var parseData = JSON.parse(d);
-
-    var status = parseData.status;
-    var assignTo = parseData.assignTo;
+    if (parseData.type !== "admin") {
+      const lead = await leads
+        .findAll({
+          include: [
+            {
+              model: user,
+              attributes: ["name"],
+            },
+            {
+              model: history,
+              attributes: ["historyid"],
+            },
+          ],
+          where: {
+            status: parseData.status,
+            assignTo: parseData.assignTo,
+          },
+        })
+        .catch((err) => {
+          console.log(err);
+          var senda = {
+            version: "v1",
+            rCode: 104,
+            results: { error: err.errors[0].message },
+          };
+          e = "";
+          ec = 104;
+          res.send(senda);
+        });
+      var dats = JSON.parse(JSON.stringify(lead, null, 2));
+      var datas = { leads: dats };
+      var send = {
+        version: "v1",
+        rCode: 100,
+        results: datas,
+      };
+      res.send(send);
+    } else {
+      const lead = await leads
+        .findAll({
+          include: [
+            {
+              model: user,
+              attributes: ["name"],
+            },
+            {
+              model: history,
+              attributes: ["historyid"],
+            },
+          ],
+          where: {
+            status: parseData.status,
+          },
+        })
+        .catch((err) => {
+          console.log(err);
+          var senda = {
+            version: "v1",
+            rCode: 104,
+            results: { error: err.errors[0].message },
+          };
+          e = "";
+          ec = 104;
+          res.send(senda);
+        });
+      var dats = JSON.parse(JSON.stringify(lead, null, 2));
+      var datas = { leads: dats };
+      var send = {
+        version: "v1",
+        rCode: 100,
+        results: datas,
+      };
+      res.send(send);
+    }
     const dat = parseData.dat;
     var token = parseData.token;
 
@@ -519,23 +631,75 @@ exports.getClient = async (req, res) => {
       ec = 104;
       throw new Error("error");
     }
-    console.log(status)
+  } catch (err) {
+    console.log("2:", err);
+    var dataa = { error: e };
+    var senda = {
+      version: "v1",
+      rCode: ec,
+      results: dataa,
+    };
+    e = "";
+    ec = 104;
+    res.send(senda);
+  }
+};
+
+exports.getClient = async (req, res) => {
+  try {
+    const data = req.body.data;
+    var d = decodeApi(data);
+    var parseData = JSON.parse(d);
+
+    const leadId = parseData.leadId;
+    const dat = parseData.dat;
+    var token = parseData.token;
+
+    if (getDateUNIX() !== dat) {
+      e = e + "Token Expired";
+      ec = 104;
+      throw new Error("error");
+    }
     const lead = await leads
-      .findAll(
-        {
-          include: [
-            {
-              model: user,
-            },
-            {
-              model: history,
-            }
-          ],
-          where: {
-            status: parseData.status,
-          },
+      .findOne({
+        where: {
+          leadId: leadId,
         },
-      )
+        include: [
+          {
+            model: user,
+            attributes: ["name"],
+          },
+          {
+            model: Project,
+            attributes: ["name"],
+          },
+          {
+            model: history,
+            include: [
+              {
+                model: Project,
+                attributes: ["name"],
+              },
+            ],
+          },
+          {
+            model: calllog,
+          },
+          {
+            model: property,
+            attributes: ["name"],
+          },
+          {
+            model: Inventory,
+            attributes: ["name"],
+          },
+          {
+            model: land,
+            attributes: ["name"],
+          },
+        ],
+      })
       .catch((err) => {
         console.log(err);
         var senda = {
@@ -547,8 +711,7 @@ exports.getClient = async (req, res) => {
         ec = 104;
         res.send(senda);
       });
-    var dats = JSON.parse(JSON.stringify(lead, null, 2));
-    var datas = { leads: dats };
+    var datas = { lead };
     var send = {
       version: "v1",
       rCode: 100,

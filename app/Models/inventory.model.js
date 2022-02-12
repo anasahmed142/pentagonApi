@@ -47,7 +47,7 @@ var inventory = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    project: {
+    projectid: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },

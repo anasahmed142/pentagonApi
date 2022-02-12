@@ -22,6 +22,10 @@ var history = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    date:{
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
     leadId: {
       type: DataTypes.INTEGER,
       allowNull: true,

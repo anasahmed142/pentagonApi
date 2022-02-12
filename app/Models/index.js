@@ -1,9 +1,9 @@
 var User = require("./user.model.js");
 var Leads = require("./leads.model.js");
 var Project = require("./project.model.js");
-var Inventory = require("./inventory.model.js");
-var lands = require("./land.model.js");
-var historys = require("./history.model");
+var Inventory = require("./Inventory.model.js");
+var land = require("./land.model.js");
+var history = require("./history.model");
 var attendance = require("./attendance.model");
 var calllog = require("./calllog.model");
 var installmentplan = require("./installmentplan.model");
@@ -11,159 +11,132 @@ var paymenthistory = require("./paymenthistory.model");
 var property = require("./property.model");
 
 const sequelize = require("./database");
-const inventory = require("./inventory.model.js");
-const land = require("./land.model.js");
 const db = {};
 db.sequelize = sequelize;
+
+User.hasMany(User, { foreignKey: "updatedBy" }, { foreignKey: "createdBy" });
 
 User.hasMany(
   Leads,
   { foreignKey: "assignAgent" },
   { foreignKey: "updatedBy" },
-  { foreignKey: "createdBy" },
-  User,
-  { foreignKey: "updatedBy" },
-  { foreignKey: "createdBy" },
-  attendance,
-  { foreignKey: "userid" },
-  calllog,
-  { foreignKey: "createdBy" },
-  installmentplan,
-  { foreignKey: "updatedBy" },
-  { foreignKey: "createdBy" },
-  paymenthistory,
-  { foreignKey: "userid" },
-  { foreignKey: "updatedBy" },
-  { foreignKey: "createdBy" },
-  historys,
-  { foreignKey: "createdBy" },
-  Inventory,
-  { foreignKey: "updatedBy" },
-  { foreignKey: "createdBy" },
-  lands,
-  { foreignKey: "updatedBy" },
-  { foreignKey: "createdBy" },
-  Project,
-  { foreignKey: "updatedBy" },
   { foreignKey: "createdBy" }
 );
-
 Leads.belongsTo(
   User,
   { foreignKey: "assignAgent" },
   { foreignKey: "updatedBy" },
-  { foreignKey: "createdBy" },
-  Project,
-  { foreignKey: "project" },
-  inventory,
-  { foreignKey: "inventory" },
-  land,
-  { foreignKey: "land" },
-  property,
-  { foreignKey: "property" }
+  { foreignKey: "createdBy" }
 );
 
-Leads.hasMany(
-  historys,
-  { foreignKey: "leadId" },
-  calllog,
-  { foreignKey: "leadId" },
-  paymenthistory,
-  { foreignKey: "leadId" }
-);
+User.hasMany(attendance, { foreignKey: "userid" });
+attendance.belongsTo(User, { foreignKey: "userid" });
 
-Project.belongsTo(
+User.hasMany(calllog, { foreignKey: "createdBy" });
+calllog.belongsTo(User, { foreignKey: "createdBy" });
+
+User.hasMany(
+  installmentplan,
+  { foreignKey: "updatedBy" },
+  { foreignKey: "createdBy" }
+);
+installmentplan.belongsTo(
   User,
   { foreignKey: "updatedBy" },
   { foreignKey: "createdBy" }
 );
 
-Project.hasMany(
-  Inventory,
-  { foreignKey: "project" },
+User.hasMany(
   paymenthistory,
-  { foreignKey: "projectid" },
-  historys,
-  { foreignKey: "ProjectIntrestId" },
-  Leads,
-  { foreignKey: "project" },
-  installmentplan,
-  { foreignKey: "projectid" }
-);
-
-historys.belongsTo(
-  User,
-  { foreignKey: "createdBy" },
-  Leads,
-  { foreignKey: "leadid" },
-  Project,
-  { foreignKey: "ProjectIntrestId" }
-);
-
-inventory.belongsTo(
-  User,
+  { foreignKey: "userid" },
   { foreignKey: "updatedBy" },
-  { foreignKey: "createdBy" },
-  Project,
-  { foreignKey: "project" }
+  { foreignKey: "createdBy" }
 );
-
-inventory.hasMany(Leads, { foreignKey: "inventory" }, paymenthistory, {
-  foreignKey: "inventoryid ",
-});
-
-lands.belongsTo(User, { foreignKey: "updatedBy" }, { foreignKey: "createdBy" });
-
-lands.hasMany(paymenthistory, { foreignKey: "landid" }, Leads, {
-  foreignKey: "land",
-});
-
-attendance.belongsTo(User, { foreignKey: "userid" });
-
-calllog.belongsTo(Leads, { foreignKey: "leadId" }, User, {
-  foreignKey: "createdBy",
-});
-
-installmentplan.belongsTo(
-  User,
-  { foreignKey: "updatedBy" },
-  { foreignKey: "createdBy" },
-  Project,
-  { foreignKey: "projectid" }
-);
-
-installmentplan.hasMany(paymenthistory, { foreignKey: "installmentid" });
-
+paymenthistory.hasOne(User, { foreignKey: "userid" });
 paymenthistory.belongsTo(
   User,
   { foreignKey: "updatedBy" },
   { foreignKey: "createdBy" }
 );
 
-paymenthistory.hasOne(
-  installmentplan,
-  { foreignKey: "installmentid" },
-  lands,
-  { foreignKey: "landid" },
-  Project,
-  { foreignKey: "projectid" },
-  inventory,
-  { foreignKey: "inventoryid " },
-  Leads,
-  { foreignKey: "leadId" },
-  User,
-  { foreignKey: "userid" }
+User.hasMany(history, { foreignKey: "createdBy" });
+history.belongsTo(User, { foreignKey: "createdBy" });
+
+User.hasMany(
+  Inventory,
+  { foreignKey: "updatedBy" },
+  { foreignKey: "createdBy" }
 );
+Inventory.belongsTo(
+  User,
+  { foreignKey: "updatedBy" },
+  { foreignKey: "createdBy" }
+);
+
+User.hasMany(land, { foreignKey: "updatedBy" }, { foreignKey: "createdBy" });
+land.belongsTo(User, { foreignKey: "updatedBy" }, { foreignKey: "createdBy" });
+
+User.hasMany(Project, { foreignKey: "updatedBy" }, { foreignKey: "createdBy" });
+Project.belongsTo(
+  User,
+  { foreignKey: "updatedBy" },
+  { foreignKey: "createdBy" }
+);
+
+Leads.belongsTo(Project, { foreignKey: "projectid" });
+Project.hasMany(Leads, { foreignKey: "projectid" });
+
+land.hasMany(Leads, { foreignKey: "landid" });
+Leads.belongsTo(land, { foreignKey: "landid" });
+
+// Leads.belongsTo(property, { foreignKey: "property" });
+
+Leads.hasMany(history, { foreignKey: "leadid" });
+history.belongsTo(Leads, { foreignKey: "leadid" });
+
+Leads.hasMany(calllog, { foreignKey: "leadid" });
+calllog.belongsTo(Leads, { foreignKey: "leadid" });
+
+Leads.hasMany(paymenthistory, { foreignKey: "leadid" });
+paymenthistory.hasOne(Leads, { foreignKey: "leadid" });
+
+property.hasMany(Leads, { foreignKey: "propertyid" });
+Leads.belongsTo(property, { foreignKey: "propertyid" });
+
+Inventory.hasMany(Leads, { foreignKey: "inventoryid" });
+Leads.hasOne(Inventory, { foreignKey: "inventoryid" });
+
+Inventory.hasMany(paymenthistory, { foreignKey: "inventoryid" });
+paymenthistory.hasOne(Inventory, { foreignKey: "inventoryid" });
+
+Project.hasMany(Inventory, { foreignKey: "projectid" });
+Inventory.belongsTo(Project, { foreignKey: "projectid" });
+
+land.hasMany(paymenthistory, { foreignKey: "landid" });
+paymenthistory.hasOne(land, { foreignKey: "landid" });
+
+installmentplan.hasMany(paymenthistory, { foreignKey: "installmentid" });
+paymenthistory.hasOne(installmentplan, { foreignKey: "installmentid" });
+
+Project.hasMany(paymenthistory, { foreignKey: "projectid" });
+paymenthistory.hasOne(Project, { foreignKey: "projectid" });
+
+Project.hasMany(history, { foreignKey: "ProjectIntrestId" });
+history.belongsTo(Project, { foreignKey: "ProjectIntrestId" });
+
+Project.hasMany(installmentplan, { foreignKey: "projectid" });
+installmentplan.belongsTo(Project, { foreignKey: "projectid" });
 
 db.users = User;
 db.leads = Leads;
-db.project = Project;
-db.inventory = Inventory;
-db.land = lands;
-db.history = historys;
+db.Project = Project;
+db.Inventory = Inventory;
+db.land = land;
+db.history = history;
 db.attendance = attendance;
 db.calllog = calllog;
 db.installmentplan = installmentplan;
 db.paymenthistory = paymenthistory;
+db.property = property;
 
 module.exports = db;

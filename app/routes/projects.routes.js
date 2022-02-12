@@ -36,5 +36,7 @@ module.exports = (app) => {
 
   router.post("/editInventory", upload.fields([]), project.editInventory);
 
+  router.post("/getInventory", upload.fields([]), project.getInventory);
+
   app.use("/pentagon/v1/project", router);
 };
